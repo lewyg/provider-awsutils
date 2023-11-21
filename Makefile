@@ -6,12 +6,12 @@ PROJECT_REPO ?= github.com/crossplane-contrib/$(PROJECT_NAME)
 
 export TERRAFORM_VERSION ?= 1.2.1
 
-export TERRAFORM_PROVIDER_SOURCE ?= hashicorp/null
-export TERRAFORM_PROVIDER_REPO ?= https://github.com/hashicorp/terraform-provider-null
-export TERRAFORM_PROVIDER_VERSION ?= 3.1.0
-export TERRAFORM_PROVIDER_DOWNLOAD_NAME ?= terraform-provider-null
-export TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX ?= https://releases.hashicorp.com/$(TERRAFORM_PROVIDER_DOWNLOAD_NAME)/$(TERRAFORM_PROVIDER_VERSION)
-export TERRAFORM_NATIVE_PROVIDER_BINARY ?= terraform-provider-null_v3.1.0_x5
+export TERRAFORM_PROVIDER_SOURCE ?= cloudposse/awsutils
+export TERRAFORM_PROVIDER_REPO ?= https://github.com/cloudposse/terraform-provider-awsutils
+export TERRAFORM_PROVIDER_VERSION ?= 0.18.1
+export TERRAFORM_PROVIDER_DOWNLOAD_NAME ?= terraform-provider-awsutils
+export TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX ?= https://github.com/cloudposse/$(TERRAFORM_PROVIDER_DOWNLOAD_NAME)/releases/download/$(TERRAFORM_PROVIDER_VERSION)
+export TERRAFORM_NATIVE_PROVIDER_BINARY ?= terraform-provider-awsutils_0.18.1
 export TERRAFORM_DOCS_PATH ?= docs/resources
 
 
@@ -121,7 +121,7 @@ $(TERRAFORM_PROVIDER_SCHEMA): $(TERRAFORM)
 pull-docs:
 	@if [ ! -d "$(WORK_DIR)/$(TERRAFORM_PROVIDER_SOURCE)" ]; then \
   		mkdir -p "$(WORK_DIR)/$(TERRAFORM_PROVIDER_SOURCE)" && \
-		git clone -c advice.detachedHead=false --depth 1 --filter=blob:none --branch "v$(TERRAFORM_PROVIDER_VERSION)" --sparse "$(TERRAFORM_PROVIDER_REPO)" "$(WORK_DIR)/$(TERRAFORM_PROVIDER_SOURCE)"; \
+		git clone -c advice.detachedHead=false --depth 1 --filter=blob:none --branch "$(TERRAFORM_PROVIDER_VERSION)" "$(TERRAFORM_PROVIDER_REPO)" "$(WORK_DIR)/$(TERRAFORM_PROVIDER_SOURCE)"; \
 	fi
 	@git -C "$(WORK_DIR)/$(TERRAFORM_PROVIDER_SOURCE)" sparse-checkout set "$(TERRAFORM_DOCS_PATH)"
 
