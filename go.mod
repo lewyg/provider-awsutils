@@ -1,4 +1,4 @@
-module github.com/upbound/upjet-provider-template
+module github.com/crossplane-contrib/provider-awsutils
 
 go 1.19
 
