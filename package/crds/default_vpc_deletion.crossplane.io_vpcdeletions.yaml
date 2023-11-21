@@ -4,18 +4,18 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
-  name: resources.null.awsutils.upbound.io
+  name: vpcdeletions.default_vpc_deletion.crossplane.io
 spec:
-  group: null.awsutils.upbound.io
+  group: default_vpc_deletion.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - awsutils
-    kind: Resource
-    listKind: ResourceList
-    plural: resources
-    singular: resource
+    kind: VPCDeletion
+    listKind: VPCDeletionList
+    plural: vpcdeletions
+    singular: vpcdeletion
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -34,10 +34,14 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Resource is the Schema for the Resources API. The null_resource
-          resource implements the standard resource lifecycle but takes no further
-          action. The triggers argument allows specifying an arbitrary set of values
-          that, when changed, will cause the resource to be replaced.
+        description: VPCDeletion is the Schema for the VPCDeletions API. Deletes the
+          default VPC along with the child resources of the VPC including Subnets,
+          Route Tables, NACLs and Internet Gateways in the configured region. Best-practices
+          call for not using the default VPC, but rather, creating a new set of VPCs
+          as necessary. AWS Security Hub will flag the default VPCs as non-compliant
+          if they aren't configured with best-practices. Rather than jumping through
+          hoops, it's easier to delete to default VPCs. Please note that applying
+          this resource is destructive and nonreversible.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -52,7 +56,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: ResourceSpec defines the desired state of Resource
+            description: VPCDeletionSpec defines the desired state of VPCDeletion
             properties:
               deletionPolicy:
                 default: Delete
@@ -68,14 +72,6 @@ spec:
                 - Delete
                 type: string
               forProvider:
-                properties:
-                  triggers:
-                    additionalProperties:
-                      type: string
-                    description: A map of arbitrary strings that, when changed, will
-                      force the null resource to be replaced, re-running any associated
-                      provisioners.
-                    type: object
                 type: object
               initProvider:
                 description: THIS IS A BETA FIELD. It will be honored unless the Management
@@ -88,14 +84,6 @@ spec:
                   on creation, but we do not desire to update them after creation,
                   for example because of an external controller is managing them,
                   like an autoscaler.
-                properties:
-                  triggers:
-                    additionalProperties:
-                      type: string
-                    description: A map of arbitrary strings that, when changed, will
-                      force the null resource to be replaced, re-running any associated
-                      provisioners.
-                    type: object
                 type: object
               managementPolicies:
                 default:
@@ -258,19 +246,13 @@ spec:
             - forProvider
             type: object
           status:
-            description: ResourceStatus defines the observed state of Resource.
+            description: VPCDeletionStatus defines the observed state of VPCDeletion.
             properties:
               atProvider:
                 properties:
                   id:
+                    description: (String) The ID of the VPC that was deleted.
                     type: string
-                  triggers:
-                    additionalProperties:
-                      type: string
-                    description: A map of arbitrary strings that, when changed, will
-                      force the null resource to be replaced, re-running any associated
-                      provisioners.
-                    type: object
                 type: object
               conditions:
                 description: Conditions of the resource.

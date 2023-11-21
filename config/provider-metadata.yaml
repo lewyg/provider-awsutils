@@ -1,36 +1,122 @@
-name: hashicorp/null
+name: cloudposse/awsutils
 resources:
-    null_resource:
+    awsutils_default_vpc_deletion:
         subCategory: ""
-        description: The null_resource resource implements the standard resource lifecycle but takes no further action. The triggers argument allows specifying an arbitrary set of values that, when changed, will cause the resource to be replaced.
-        name: null_resource
-        title: null_resource Resource - terraform-provider-null
+        description: Deletes the default VPC along with the child resources of the VPC including Subnets, Route Tables, NACLs and Internet Gateways in the configured region. Best-practices call for not using the default VPC, but rather, creating a new set of VPCs as necessary. AWS Security Hub will flag the default VPCs as non-compliant if they aren't configured with best-practices. Rather than jumping through hoops, it's easier to delete to default VPCs. This task cannot be accomplished with the official AWS Terraform Provider, so this resource is necessary. Please note that applying this resource is destructive and nonreversible. This resource is unusual as it will DELETE infrastructure when terraform apply is run rather than creating it. This is a permanent deletion and nothing will be restored when terraform destroy is run.
+        name: awsutils_default_vpc_deletion
+        title: awsutils_default_vpc_deletion Resource - terraform-provider-awsutils
         examples:
-            - name: cluster
+            - name: default
+              manifest: '{}'
+        argumentDocs:
+            id: (String) The ID of the VPC that was deleted.
+        importStatements: []
+    awsutils_expiring_iam_access_key:
+        subCategory: ""
+        description: Provides an IAM access key that expires after max_age seconds. This is a set of credentials that allow API requests to be made as an IAM user.
+        name: awsutils_expiring_iam_access_key
+        title: awsutils_expiring_iam_access_key Resource - terraform-provider-awsutils
+        examples:
+            - name: test
               manifest: |-
                 {
-                  "connection": [
-                    {
-                      "host": "${element(aws_instance.cluster.*.public_ip, 0)}"
-                    }
-                  ],
-                  "provisioner": {
-                    "remote-exec": [
-                      {
-                        "inline": [
-                          "bootstrap-cluster.sh ${join(\" \", aws_instance.cluster.*.private_ip)}"
-                        ]
-                      }
-                    ]
-                  },
-                  "triggers": {
-                    "cluster_instance_ids": "${join(\",\", aws_instance.cluster.*.id)}"
-                  }
+                  "max_age": "${60 * 60 * 24 * 30}",
+                  "user": "${aws_iam_user.test.name}"
                 }
+              references:
+                user: aws_iam_user.test.name
               dependencies:
-                aws_instance.cluster: |-
+                aws_iam_user.test: |-
                     {
-                      "count": 3
+                      "name": "test",
+                      "path": "/test/"
                     }
-        argumentDocs: {}
+        argumentDocs:
+            create_date: (String)
+            encrypted_secret: (String)
+            encrypted_ses_smtp_password_v4: (String)
+            expiration_date: (String)
+            id: (String) The ID of this resource.
+            key_fingerprint: (String)
+            max_age: (Number)
+            pgp_key: (String)
+            secret: (String, Sensitive)
+            ses_smtp_password_v4: (String, Sensitive)
+            status: (String)
+            user: (String)
+        importStatements: []
+    awsutils_guardduty_organization_settings:
+        subCategory: ""
+        description: Enables a list of accounts as GuardDuty member accounts in an existing AWS Organization. Designating an account as the GuardDuty Administrator account in an AWS Organization can optionally enable all newly created accounts and accounts that join the organization after the setting is enabled, however it does not enable existing accounts. Use this resource to enable a list of existing accounts
+        name: awsutils_guardduty_organization_settings
+        title: awsutils_guardduty_organization_settings Resource - terraform-provider-awsutils
+        examples:
+            - name: default
+              manifest: |-
+                {
+                  "detector_id": "42bd3eab69b96663418094bb59397d1f",
+                  "member_accounts": [
+                    "111111111111",
+                    "22222222222"
+                  ]
+                }
+        argumentDocs:
+            detector_id: (String)
+            id: (String) The ID of this resource.
+            member_accounts: (Set of String) A list of AWS Organization member accounts to associate with the GuardDuty Administrator account.
+        importStatements: []
+    awsutils_macie2_organization_settings:
+        subCategory: ""
+        description: Enables a list of accounts as Macie2 member accounts in an existing AWS Organization. Designating an account as the Macie2 Administrator account in an AWS Organization can optionally enable all newly created accounts and accounts that join the organization after the setting is enabled, however, it does not enable existing accounts. Use this resource to enable a list of existing accounts.
+        name: awsutils_macie2_organization_settings
+        title: awsutils_macie2_organization_settings Resource - terraform-provider-awsutils
+        examples:
+            - name: default
+              manifest: |-
+                {
+                  "member_accounts": [
+                    "111111111111",
+                    "22222222222"
+                  ]
+                }
+        argumentDocs:
+            id: (String) The ID of this resource.
+            member_accounts: (Set of String) A list of AWS Organization member accounts to associate with the Macie2 Administrator account.
+        importStatements: []
+    awsutils_security_hub_control_disablement:
+        subCategory: ""
+        description: Disables a Security Hub control in the configured region. It can be useful to turn off security checks for controls that are not relevant to your environment. For example, you might use a single Amazon S3 bucket to log your CloudTrail logs. If so, you can turn off controls related to CloudTrail logging in all accounts and Regions except for the account and Region where the centralized S3 bucket is located. Disabling irrelevant controls reduces the number of irrelevant findings. It also removes the failed check from the readiness score for the associated standard.
+        name: awsutils_security_hub_control_disablement
+        title: awsutils_security_hub_control_disablement Resource - terraform-provider-awsutils
+        examples:
+            - name: default
+              manifest: |-
+                {
+                  "control_arn": "arn:aws:securityhub:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:control/cis-aws-foundations-benchmark/v/1.2.0/1.1",
+                  "reason": "Global Resources are not evaluated in this region"
+                }
+        argumentDocs:
+            control_arn: (String) The ARN of the Security Hub Standards Control to disable.
+            id: (String) The ID of this resource.
+            reason: (String) The reason the control is being disabed.
+        importStatements: []
+    awsutils_security_hub_organization_settings:
+        subCategory: ""
+        description: Enables a list of accounts as Security Hub member accounts in an existing AWS Organization. Designating an account as the Security Hub Administrator account in an AWS Organization can optionally enable all newly created accounts and accounts that join the organization after the setting is enabled, however it does not enable existing accounts. Use this resource to enable a list of existing accounts
+        name: awsutils_security_hub_organization_settings
+        title: awsutils_security_hub_organization_settings Resource - terraform-provider-awsutils
+        examples:
+            - name: default
+              manifest: |-
+                {
+                  "auto_enable_new_accounts": true,
+                  "member_accounts": [
+                    "111111111111",
+                    "222222222222"
+                  ]
+                }
+        argumentDocs:
+            auto_enable_new_accounts: (Boolean) A flag to indicate if the automatic enablement setting, should be enabled. If enabled, Security Hub begins to enable new accounts as they are added to the organization
+            id: (String) The ID of this resource.
+            member_accounts: (Set of String) A list of AWS Organization member accounts to associate with the Security Hub Administrator account.
         importStatements: []

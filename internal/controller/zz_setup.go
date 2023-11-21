@@ -9,7 +9,7 @@ import (
 
 	"github.com/crossplane/upjet/pkg/controller"
 
-	resource "github.com/crossplane-contrib/provider-awsutils/internal/controller/null/resource"
+	vpcdeletion "github.com/crossplane-contrib/provider-awsutils/internal/controller/default_vpc_deletion/vpcdeletion"
 	providerconfig "github.com/crossplane-contrib/provider-awsutils/internal/controller/providerconfig"
 )
 
@@ -17,7 +17,7 @@ import (
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
-		resource.Setup,
+		vpcdeletion.Setup,
 		providerconfig.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {

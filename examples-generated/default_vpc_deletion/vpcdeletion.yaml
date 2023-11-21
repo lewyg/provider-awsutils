@@ -1,0 +1,10 @@
+apiVersion: default_vpc_deletion.crossplane.io/v1alpha1
+kind: VPCDeletion
+metadata:
+  annotations:
+    meta.upbound.io/example-id: default_vpc_deletion/v1alpha1/vpcdeletion
+  labels:
+    testing.upbound.io/example-name: default
+  name: default
+spec:
+  forProvider: {}

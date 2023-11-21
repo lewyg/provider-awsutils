@@ -9,6 +9,8 @@ import (
 	_ "embed"
 
 	ujconfig "github.com/crossplane/upjet/pkg/config"
+
+	defaultvpcdeletion "github.com/crossplane-contrib/provider-awsutils/config/default_vpc_deletion"
 )
 
 const (
@@ -34,6 +36,8 @@ func GetProvider() *ujconfig.Provider {
 
 	for _, configure := range []func(provider *ujconfig.Provider){
 		// add custom config functions
+
+		defaultvpcdeletion.Configure,
 	} {
 		configure(pc)
 	}

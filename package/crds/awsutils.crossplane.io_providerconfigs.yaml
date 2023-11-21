@@ -4,9 +4,9 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
-  name: providerconfigs.awsutils.upbound.io
+  name: providerconfigs.awsutils.crossplane.io
 spec:
-  group: awsutils.upbound.io
+  group: awsutils.crossplane.io
   names:
     categories:
     - crossplane
